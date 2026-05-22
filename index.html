@@ -9,11 +9,28 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
 
+  :root {
+    --c-bg:        #f3efe6;
+    --c-display:   #161e2e;
+    --c-text:      #161e2e;
+    --c-text-soft: #6b7591;
+    --c-card:      #ffffff;
+    --c-cream:     #fef3d8;
+    --c-cream-bd:  #f1d99a;
+    --c-mint:      #d4f0d4;
+    --c-mint-bd:   #8fc78f;
+    --c-peach:     #fde2d4;
+    --c-peach-bd:  #f0b894;
+    --c-pink:      #fbd9e0;
+    --c-pink-bd:   #e89cae;
+    --c-border:    #e5e0d3;
+  }
+
   html, body {
     height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
-    background: #1a202c;
-    color: #fff;
+    background: var(--c-bg);
+    color: var(--c-text);
     overflow: hidden;
     touch-action: manipulation;
   }
@@ -27,76 +44,43 @@
     gap: 10px;
   }
 
-  /* ===== Display area ===== */
+  /* ===== Display ===== */
   .display {
-    flex: 0 0 28%;
-    background: #fff;
-    color: #1a202c;
-    border-radius: 20px;
-    padding: 16px 80px 16px 16px;
+    flex: 0 0 22%;
+    background: var(--c-display);
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px 22px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    text-align: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .display-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #8a93a8;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
   }
 
   .display-text {
-    width: 100%;
-    font-size: clamp(2rem, 6vw, 4.5rem);
-    font-weight: 800;
-    line-height: 1.2;
+    font-size: clamp(2rem, 5.5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
     word-break: break-word;
     white-space: pre-wrap;
     max-height: 100%;
     overflow-y: auto;
+    color: #fff;
   }
 
   .display-text.empty {
-    color: #a0aec0;
-    font-weight: 600;
-    font-size: clamp(1.25rem, 3.2vw, 2rem);
-  }
-
-  .display-controls {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .ctrl-btn {
-    width: 64px;
-    height: 64px;
-    border: none;
-    border-radius: 50%;
-    font-size: 1.6rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.08s, background 0.15s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-  }
-
-  .ctrl-btn.speak { background: #38a169; color: #fff; font-size: 1.8rem; }
-  .ctrl-btn.speak:active { transform: scale(0.88); background: #276749; }
-  .ctrl-btn.speak.playing { background: #ed8936; animation: pulse 1s infinite; }
-
-  .ctrl-btn.back { background: #ed8936; color: #fff; }
-  .ctrl-btn.back:active { transform: scale(0.88); background: #c05621; }
-
-  .ctrl-btn.clear { background: #e53e3e; color: #fff; font-size: 2rem; }
-  .ctrl-btn.clear:active { transform: scale(0.88); background: #9b2c2c; }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(237, 137, 54, 0.7); }
-    50% { box-shadow: 0 0 0 12px rgba(237, 137, 54, 0); }
+    color: #6b7591;
+    font-style: italic;
+    font-weight: 500;
   }
 
   /* ===== Phrases ===== */
@@ -108,98 +92,138 @@
   }
 
   .phrase-btn {
-    padding: 18px 6px;
-    border: 3px solid transparent;
-    border-radius: 16px;
-    background: #2b6cb0;
-    color: #fff;
-    font-size: clamp(0.95rem, 1.8vw, 1.4rem);
+    padding: 12px 6px;
+    border: 1.5px solid var(--c-cream-bd);
+    border-radius: 10px;
+    background: var(--c-cream);
+    color: var(--c-text);
+    font-size: clamp(0.85rem, 1.5vw, 1.15rem);
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.06s, background 0.1s, border-color 0.1s;
-    min-height: 72px;
+    transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
+    min-height: 50px;
     line-height: 1.2;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
   }
 
   .phrase-btn:active,
   .phrase-btn.pressed {
-    transform: scale(0.94);
-    background: #ed8936;
-    border-color: #fff;
+    transform: translateY(2px);
+    filter: brightness(0.94);
   }
 
   /* ===== Keyboard ===== */
   .keyboard {
     flex: 1 1 auto;
     display: grid;
-    grid-template-columns: repeat(13, 1fr);
-    gap: 6px;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 10px;
     min-height: 0;
   }
 
+  .key-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
   .key {
-    border: 3px solid transparent;
+    border: 1.5px solid var(--c-border);
     border-radius: 14px;
-    background: #4a5568;
-    color: #fff;
-    font-size: clamp(1.2rem, 3vw, 2.2rem);
+    background: var(--c-card);
+    color: var(--c-text);
+    font-size: clamp(1.6rem, 4.2vw, 3rem);
     font-weight: 800;
     cursor: pointer;
-    transition: transform 0.06s, background 0.1s, border-color 0.1s;
+    transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 60px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.04);
+    min-height: 56px;
+    line-height: 1;
   }
 
   .key:active,
   .key.pressed {
-    transform: scale(0.92);
-    background: #ed8936;
-    border-color: #fff;
+    transform: translateY(2px);
+    box-shadow: none;
+    filter: brightness(0.94);
   }
 
-  .key.space {
-    grid-column: span 4;
-    background: #2d3748;
-    font-size: clamp(0.9rem, 2vw, 1.4rem);
+  /* Control keys on row 5 */
+  .key.bilingual {
+    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+    font-weight: 700;
+    gap: 2px;
+  }
+  .key.bilingual .zh {
+    font-size: 1em;
+    font-weight: 800;
+  }
+  .key.bilingual .en {
+    font-size: 0.85em;
+    color: var(--c-text-soft);
+    font-weight: 600;
+  }
+
+  .key.space    { background: var(--c-mint);  border-color: var(--c-mint-bd); }
+  .key.back     { background: var(--c-peach); border-color: var(--c-peach-bd); font-size: 1.6rem; }
+  .key.back .icon { font-size: 1.3em; }
+  .key.clear-k  { background: var(--c-pink);  border-color: var(--c-pink-bd); }
+
+  .key.speak    {
+    background: var(--c-mint);
+    border-color: var(--c-mint-bd);
+  }
+  .key.speak.playing {
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(143, 199, 143, 0.6); }
+    50%      { box-shadow: 0 0 0 10px rgba(143, 199, 143, 0); }
+  }
+
+  /* Row 5 column layout: Y Z [Space] [Speak] [Back] [Clear] */
+  .key-row.r5 {
+    grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 1fr;
   }
 
   /* Tablet portrait / phone */
   @media (max-width: 720px) {
     .app { padding: 6px; gap: 6px; }
-    .display { padding: 12px 70px 12px 12px; flex-basis: 24%; }
-    .ctrl-btn { width: 54px; height: 54px; font-size: 1.3rem; }
-    .phrases { grid-template-columns: repeat(2, 1fr); }
-    .phrase-btn { min-height: 60px; padding: 14px 4px; }
-    .keyboard { grid-template-columns: repeat(7, 1fr); }
-    .key.space { grid-column: span 3; }
-    .key { min-height: 52px; }
+    .display { padding: 10px 14px; flex-basis: 18%; }
+    .phrases { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .phrase-btn { min-height: 48px; padding: 10px 4px; }
+    .keyboard { gap: 6px; }
+    .key-row { gap: 6px; }
+    .key { min-height: 46px; border-radius: 10px; }
+    .key.bilingual { font-size: 0.85rem; }
   }
 
   @media (orientation: landscape) and (max-height: 500px) {
-    .display { flex-basis: 22%; }
-    .phrase-btn { min-height: 48px; padding: 8px 4px; }
-    .key { min-height: 44px; }
+    .display { flex-basis: 20%; }
+    .phrase-btn { min-height: 40px; padding: 6px 4px; }
+    .key { min-height: 36px; }
   }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="display">
-    <div class="display-text empty" id="display">點下方按鈕開始</div>
-    <div class="display-controls">
-      <button class="ctrl-btn speak" id="speak" aria-label="唸出來" title="唸出來">🔊</button>
-      <button class="ctrl-btn back" id="backspace" aria-label="刪除一個字" title="刪除一個字">⌫</button>
-      <button class="ctrl-btn clear" id="clear" aria-label="全部清除" title="全部清除">×</button>
-    </div>
+    <div class="display-label">目前訊息 CURRENT MESSAGE</div>
+    <div class="display-text empty" id="display">(請按下方按鍵開始輸入)</div>
   </div>
 
   <div class="phrases" id="phrases"></div>
 
-  <div class="keyboard" id="keyboard"></div>
+  <div class="keyboard" id="keyboard">
+    <div class="key-row" data-letters="ABCDEF"></div>
+    <div class="key-row" data-letters="GHIJKL"></div>
+    <div class="key-row" data-letters="MNOPQR"></div>
+    <div class="key-row" data-letters="STUVWX"></div>
+    <div class="key-row r5" data-letters="YZ"></div>
+  </div>
 </div>
 
 <script>
@@ -216,20 +240,15 @@
     "I miss…"
   ];
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
   const display = document.getElementById("display");
   const phrasesEl = document.getElementById("phrases");
-  const keyboardEl = document.getElementById("keyboard");
-  const speakBtn = document.getElementById("speak");
-  const backBtn = document.getElementById("backspace");
-  const clearBtn = document.getElementById("clear");
+  const PLACEHOLDER = "(請按下方按鍵開始輸入)";
 
   let text = "";
 
   function render() {
     if (text === "") {
-      display.textContent = "點下方按鈕開始";
+      display.textContent = PLACEHOLDER;
       display.classList.add("empty");
     } else {
       display.textContent = text;
@@ -247,20 +266,14 @@
     text += (needsSpace ? " " : "") + value + " ";
     render();
   }
-
-  function appendLetter(L) {
-    text += L;
-    render();
-  }
-
+  function appendLetter(L) { text += L; render(); }
   function appendSpace() {
-    if (!text.endsWith(" ") && text.length > 0) {
-      text += " ";
-      render();
-    }
+    if (!text.endsWith(" ") && text.length > 0) { text += " "; render(); }
   }
+  function backspace() { text = text.slice(0, -1); render(); }
+  function clearAll() { text = ""; render(); }
 
-  // Build phrases
+  // Phrases
   phrases.forEach(p => {
     const btn = document.createElement("button");
     btn.className = "phrase-btn";
@@ -270,62 +283,83 @@
     phrasesEl.appendChild(btn);
   });
 
-  // Build keyboard
-  letters.forEach(L => {
-    const btn = document.createElement("button");
-    btn.className = "key";
-    btn.type = "button";
-    btn.textContent = L;
-    btn.addEventListener("click", () => { flashPress(btn); appendLetter(L); });
-    keyboardEl.appendChild(btn);
+  // Letter rows
+  document.querySelectorAll(".key-row").forEach(row => {
+    row.dataset.letters.split("").forEach(L => {
+      const btn = document.createElement("button");
+      btn.className = "key";
+      btn.type = "button";
+      btn.textContent = L;
+      btn.addEventListener("click", () => { flashPress(btn); appendLetter(L); });
+      row.appendChild(btn);
+    });
   });
 
-  const space = document.createElement("button");
-  space.className = "key space";
-  space.type = "button";
-  space.textContent = "␣ Space";
-  space.addEventListener("click", () => { flashPress(space); appendSpace(); });
-  keyboardEl.appendChild(space);
-
-  // Controls
-  clearBtn.addEventListener("click", () => { text = ""; render(); });
-  backBtn.addEventListener("click", () => { text = text.slice(0, -1); render(); });
-
-  // Speech synthesis
-  speakBtn.addEventListener("click", () => {
-    if (!text.trim()) return;
-    if (!("speechSynthesis" in window)) {
-      alert("此瀏覽器不支援語音播放");
-      return;
+  // Helper to build bilingual control key
+  function makeCtrlKey(extraClass, zh, en, onClick, icon) {
+    const btn = document.createElement("button");
+    btn.className = "key bilingual " + extraClass;
+    btn.type = "button";
+    if (icon) {
+      const i = document.createElement("span");
+      i.className = "icon";
+      i.textContent = icon;
+      btn.appendChild(i);
     }
+    if (zh) {
+      const z = document.createElement("span");
+      z.className = "zh";
+      z.textContent = zh;
+      btn.appendChild(z);
+    }
+    if (en) {
+      const e = document.createElement("span");
+      e.className = "en";
+      e.textContent = en;
+      btn.appendChild(e);
+    }
+    btn.addEventListener("click", () => { flashPress(btn); onClick(); });
+    return btn;
+  }
+
+  const r5 = document.querySelector(".key-row.r5");
+  const spaceBtn  = makeCtrlKey("space",   "空白",  "Space",  appendSpace);
+  const speakBtn  = makeCtrlKey("speak",   "唸出來", "Speak", speakText);
+  const backBtnEl = makeCtrlKey("back",    "",      "",      backspace, "⌫");
+  const clearBtn  = makeCtrlKey("clear-k", "清除",  "Clear",  clearAll);
+  r5.appendChild(spaceBtn);
+  r5.appendChild(speakBtn);
+  r5.appendChild(backBtnEl);
+  r5.appendChild(clearBtn);
+
+  // Speech
+  function speakText() {
+    if (!text.trim()) return;
+    if (!("speechSynthesis" in window)) { alert("此瀏覽器不支援語音播放"); return; }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    // Try to pick an English voice (phrases are English)
     const voices = window.speechSynthesis.getVoices();
     const en = voices.find(v => /^en/i.test(v.lang));
     if (en) u.voice = en;
-    u.rate = 0.9;
-    u.pitch = 1;
+    u.rate = 0.9; u.pitch = 1;
     u.onstart = () => speakBtn.classList.add("playing");
-    u.onend = () => speakBtn.classList.remove("playing");
+    u.onend   = () => speakBtn.classList.remove("playing");
     u.onerror = () => speakBtn.classList.remove("playing");
     window.speechSynthesis.speak(u);
-  });
-
-  // Warm up voices list (some browsers load async)
+  }
   if ("speechSynthesis" in window) {
     window.speechSynthesis.onvoiceschanged = () => {};
     window.speechSynthesis.getVoices();
   }
 
-  // Keyboard support (for desktop testing)
+  // Physical keyboard fallback (desktop testing)
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace") { e.preventDefault(); backBtn.click(); return; }
-    if (e.key === "Escape") { clearBtn.click(); return; }
-    if (e.key === " ") { e.preventDefault(); space.click(); return; }
+    if (e.key === "Backspace") { e.preventDefault(); backBtnEl.click(); return; }
+    if (e.key === "Escape")    { clearBtn.click(); return; }
+    if (e.key === " ")         { e.preventDefault(); spaceBtn.click(); return; }
     if (/^[a-zA-Z]$/.test(e.key)) {
       const L = e.key.toUpperCase();
-      const btn = [...keyboardEl.children].find(b => b.textContent === L);
+      const btn = [...document.querySelectorAll(".key-row .key")].find(b => b.textContent === L);
       if (btn) btn.click();
     }
   });
