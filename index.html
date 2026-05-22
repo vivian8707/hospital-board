@@ -54,10 +54,10 @@
 
   /* ===== Display ===== */
   .display {
-    flex: 0 0 22%;
+    flex: 0 0 14%;
     background: var(--card);
     border-radius: 20px;
-    padding: 18px 24px;
+    padding: 14px 22px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -66,16 +66,8 @@
     box-shadow: var(--shadow);
   }
 
-  .display-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-
   .display-text {
-    font-size: clamp(2rem, 5.5vw, 4rem);
+    font-size: clamp(1.6rem, 4vw, 3rem);
     font-weight: 700;
     line-height: 1.15;
     word-break: break-word;
@@ -100,16 +92,16 @@
   }
 
   .phrase-btn {
-    padding: 14px 8px;
+    padding: 18px 8px;
     border: 1.5px solid var(--phrase-bd);
-    border-radius: 14px;
+    border-radius: 16px;
     background: var(--phrase);
     color: var(--ink);
-    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+    font-size: clamp(1rem, 1.7vw, 1.4rem);
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
-    min-height: 56px;
+    min-height: 78px;
     line-height: 1.2;
     box-shadow: var(--shadow-soft);
   }
@@ -197,9 +189,9 @@
   /* Tablet portrait / phone */
   @media (max-width: 720px) {
     .app { padding: 8px; gap: 8px; }
-    .display { padding: 12px 16px; flex-basis: 18%; border-radius: 16px; }
+    .display { padding: 10px 14px; flex-basis: 12%; border-radius: 14px; }
     .phrases { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .phrase-btn { min-height: 50px; padding: 10px 4px; }
+    .phrase-btn { min-height: 60px; padding: 12px 4px; }
     .phrase-btn.wide { grid-column: span 3; }
     .keyboard { gap: 6px; }
     .key-row { gap: 6px; }
@@ -217,7 +209,6 @@
 <body>
 <div class="app">
   <div class="display">
-    <div class="display-label">目前訊息 CURRENT MESSAGE</div>
     <div class="display-text empty" id="display">Dear Cory, want to say something?</div>
   </div>
 
