@@ -101,7 +101,7 @@
     border-radius: 16px;
     background: var(--phrase);
     color: var(--ink);
-    font-size: clamp(1rem, 1.7vw, 1.4rem);
+    font-size: clamp(1.2rem, 2vw, 1.7rem);
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
@@ -134,9 +134,10 @@
     position: absolute;
     top: 4px;
     right: 4px;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 14px;
     border: none;
     background: rgba(43, 58, 74, 0.18);
     color: #fff;
@@ -147,10 +148,14 @@
     align-items: center;
     justify-content: center;
     line-height: 1;
-    padding: 0;
-    transition: background 0.1s;
+    transition: background 0.15s, transform 0.15s;
   }
-  .phrase-del:active { background: #e25a6e; }
+  .phrase-del.armed {
+    background: #e25a6e;
+    font-size: 0.8rem;
+    padding: 0 10px;
+    transform: scale(1.05);
+  }
 
   /* ===== Keyboard ===== */
   .keyboard {
@@ -194,18 +199,16 @@
 
   /* Control keys */
   .key.bilingual {
-    font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+    font-size: clamp(1.05rem, 1.9vw, 1.35rem);
     font-weight: 700;
-    gap: 2px;
+    gap: 3px;
   }
   .key.bilingual .zh { font-size: 1em; font-weight: 800; }
   .key.bilingual .en { font-size: 0.85em; color: var(--ink-soft); font-weight: 600; }
   .key.bilingual .icon { font-size: 1.6em; line-height: 1; }
 
-  .key.space    { background: var(--space); border-color: var(--space-bd); }
   .key.speak    { background: var(--speak); border-color: var(--speak-bd); }
   .key.fav      { background: var(--fav);   border-color: var(--fav-bd);   }
-  .key.back     { background: var(--back);  border-color: var(--back-bd);  }
   .key.clear-k  { background: var(--clear); border-color: var(--clear-bd); }
 
   .key.fav.flash { animation: fav-flash 0.5s ease-out; }
@@ -221,9 +224,9 @@
     50%      { box-shadow: 0 0 0 12px rgba(182, 167, 216, 0); }
   }
 
-  /* Row 5: Y Z [Space] [Speak] [Fav] [Back] [Clear] */
+  /* Row 5: Y Z [Speak] [Fav] [Clear] — letters stay 1fr like other rows */
   .key-row.r5 {
-    grid-template-columns: 1fr 1fr 1.3fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1.33fr 1.33fr 1.33fr;
   }
 
   /* Tablet portrait / phone */
@@ -237,19 +240,17 @@
       max-height: 40vh;
     }
     .phrase-btn {
-      min-height: 50px;
+      min-height: 56px;
       padding: 10px 4px;
-      font-size: 0.95rem;
+      font-size: 1.15rem;
       border-radius: 12px;
     }
     .phrase-btn.wide { grid-column: span 3; }
     .keyboard { gap: 5px; }
     .key-row { gap: 5px; }
-    .key { min-height: 40px; border-radius: 10px; }
-    .key.bilingual { font-size: 0.75rem; }
+    .key { min-height: 42px; border-radius: 10px; }
+    .key.bilingual { font-size: 0.95rem; }
     .key.bilingual .en { font-size: 0.8em; }
-    .key.back { font-size: 1.3rem; }
-    .key.back .icon { font-size: 1.1em; }
   }
 
   @media (orientation: landscape) and (max-height: 500px) {
@@ -327,6 +328,7 @@
     const needsSpace = text.length > 0 && !text.endsWith(" ") && !/^[.,!?…]/.test(value);
     text += (needsSpace ? " " : "") + value + " ";
     render();
+    speakText(value);
   }
   function appendLetter(L) { text += L; render(); }
   function appendSpace() {
@@ -351,12 +353,21 @@
       del.type = "button";
       del.setAttribute("aria-label", "刪除");
       del.textContent = "×";
+      let armTimer = null;
       del.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (confirm("刪除「" + p.text + "」？")) {
+        if (del.classList.contains("armed")) {
+          clearTimeout(armTimer);
           customPhrases.splice(idx, 1);
           saveCustom();
           renderPhrases();
+        } else {
+          del.classList.add("armed");
+          del.textContent = "確定刪？";
+          armTimer = setTimeout(() => {
+            del.classList.remove("armed");
+            del.textContent = "×";
+          }, 2000);
         }
       });
       btn.appendChild(del);
@@ -396,15 +407,11 @@
   }
 
   const r5 = document.querySelector(".key-row.r5");
-  const spaceBtn = makeCtrlKey("space",   "空白",   "Space",        appendSpace);
-  const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak",        speakText);
-  const favBtn   = makeCtrlKey("fav",     "加常用", "Favorite",     addCurrentToFavorites);
-  const backBtn  = makeCtrlKey("back",    "",       "",             backspace, "⌫");
-  const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear",        clearAll);
-  r5.appendChild(spaceBtn);
+  const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak",    () => speakText(text));
+  const favBtn   = makeCtrlKey("fav",     "加常用", "Favorite", addCurrentToFavorites);
+  const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear",    clearAll);
   r5.appendChild(speakBtn);
   r5.appendChild(favBtn);
-  r5.appendChild(backBtn);
   r5.appendChild(clearBtn);
 
   function addCurrentToFavorites() {
@@ -422,29 +429,59 @@
     setTimeout(() => favBtn.classList.remove("flash"), 500);
   }
 
-  function speakText() {
-    if (!text.trim()) return;
-    if (!("speechSynthesis" in window)) { alert("此瀏覽器不支援語音播放"); return; }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+  // Voices ranked by perceived warmth/sweetness on common platforms
+  const PREFERRED_VOICES = [
+    "Samantha",                                  // iOS / macOS — warm female US
+    "Ava (Premium)", "Ava (Enhanced)", "Ava",    // iOS premium female
+    "Allison (Premium)", "Allison",              // iOS premium female
+    "Karen",                                     // iOS AU female
+    "Moira",                                     // iOS IE female
+    "Tessa",                                     // iOS ZA female
+    "Microsoft Aria Online (Natural)",           // Edge — very natural female
+    "Microsoft Jenny Online (Natural)",          // Edge — friendly female
+    "Google UK English Female",
+    "Google US English"
+  ];
+
+  function pickVoice() {
     const voices = window.speechSynthesis.getVoices();
-    const en = voices.find(v => /^en/i.test(v.lang));
-    if (en) u.voice = en;
-    u.rate = 0.9; u.pitch = 1;
+    if (!voices.length) return null;
+    for (const name of PREFERRED_VOICES) {
+      const v = voices.find(v => v.name === name || v.name.includes(name));
+      if (v) return v;
+    }
+    const enFemale = voices.find(v => /^en/i.test(v.lang) && /female/i.test(v.name));
+    if (enFemale) return enFemale;
+    return voices.find(v => /^en/i.test(v.lang)) || voices[0];
+  }
+
+  function speakText(what) {
+    const t = (what || "").trim();
+    if (!t) return;
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    const v = pickVoice();
+    if (v) u.voice = v;
+    u.rate = 0.88;     // a touch slower for warmth
+    u.pitch = 1.08;    // slightly higher for sweetness
+    u.volume = 1;
     u.onstart = () => speakBtn.classList.add("playing");
     u.onend   = () => speakBtn.classList.remove("playing");
     u.onerror = () => speakBtn.classList.remove("playing");
     window.speechSynthesis.speak(u);
   }
+
   if ("speechSynthesis" in window) {
     window.speechSynthesis.onvoiceschanged = () => {};
     window.speechSynthesis.getVoices();
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace") { e.preventDefault(); backBtn.click(); return; }
+    if (e.key === "Backspace") { e.preventDefault(); backspace(); return; }
     if (e.key === "Escape")    { clearBtn.click(); return; }
-    if (e.key === " ")         { e.preventDefault(); spaceBtn.click(); return; }
+    if (e.key === " ")         { e.preventDefault(); appendSpace(); return; }
+    if (e.key === "Enter")     { e.preventDefault(); speakText(text); return; }
     if (/^[a-zA-Z]$/.test(e.key)) {
       const L = e.key.toUpperCase();
       const btn = [...document.querySelectorAll(".key-row .key")].find(b => b.textContent === L);
