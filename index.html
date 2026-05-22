@@ -89,6 +89,8 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
+    max-height: 42vh;
+    overflow-y: auto;
   }
 
   .phrase-btn {
@@ -104,6 +106,7 @@
     min-height: 78px;
     line-height: 1.2;
     box-shadow: var(--shadow-soft);
+    position: relative;
   }
 
   .phrase-btn.wide { grid-column: span 2; }
@@ -119,6 +122,55 @@
     box-shadow: none;
     filter: brightness(0.96);
   }
+
+  .phrase-btn.custom {
+    background: var(--space);
+    border-color: var(--space-bd);
+  }
+
+  .phrase-btn.add {
+    background: transparent;
+    border: 2px dashed #c8c2b2;
+    color: var(--ink-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: none;
+  }
+  .phrase-btn.add .plus {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .phrase-btn.add .add-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .phrase-del {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(43, 58, 74, 0.18);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.1s;
+  }
+  .phrase-del:active { background: #e25a6e; }
 
   /* ===== Keyboard ===== */
   .keyboard {
@@ -224,7 +276,7 @@
 </div>
 
 <script>
-  const phrases = [
+  const DEFAULT_PHRASES = [
     { text: "Never mind…" },
     { text: "but" },
     { text: "because" },
@@ -237,6 +289,17 @@
     { text: "Walk" },
     { text: "I miss…", starter: true }
   ];
+
+  const STORAGE_KEY = "hospitalBoard.customPhrases.v1";
+  let customPhrases = [];
+  try {
+    customPhrases = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (!Array.isArray(customPhrases)) customPhrases = [];
+  } catch (e) { customPhrases = []; }
+
+  function saveCustom() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(customPhrases)); } catch (e) {}
+  }
 
   const display = document.getElementById("display");
   const phrasesEl = document.getElementById("phrases");
@@ -271,15 +334,59 @@
   function backspace() { text = text.slice(0, -1); render(); }
   function clearAll()  { text = ""; render(); }
 
-  // Phrases
-  phrases.forEach(p => {
+  function buildPhraseBtn(p, isCustom, idx) {
     const btn = document.createElement("button");
-    btn.className = "phrase-btn" + (p.wide ? " wide" : "") + (p.starter ? " starter" : "");
+    btn.className = "phrase-btn"
+      + (p.wide ? " wide" : "")
+      + (p.starter ? " starter" : "")
+      + (isCustom ? " custom" : "");
     btn.type = "button";
     btn.textContent = p.text;
     btn.addEventListener("click", () => { flashPress(btn); appendPhrase(p.text); });
-    phrasesEl.appendChild(btn);
-  });
+
+    if (isCustom) {
+      const del = document.createElement("button");
+      del.className = "phrase-del";
+      del.type = "button";
+      del.setAttribute("aria-label", "刪除");
+      del.textContent = "×";
+      del.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm("刪除「" + p.text + "」？")) {
+          customPhrases.splice(idx, 1);
+          saveCustom();
+          renderPhrases();
+        }
+      });
+      btn.appendChild(del);
+    }
+    return btn;
+  }
+
+  function renderPhrases() {
+    phrasesEl.innerHTML = "";
+    DEFAULT_PHRASES.forEach(p => phrasesEl.appendChild(buildPhraseBtn(p, false)));
+    customPhrases.forEach((t, idx) => phrasesEl.appendChild(buildPhraseBtn({ text: t }, true, idx)));
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "phrase-btn add";
+    addBtn.type = "button";
+    const plus = document.createElement("span"); plus.className = "plus"; plus.textContent = "+";
+    const lbl  = document.createElement("span"); lbl.className  = "add-label"; lbl.textContent = "新增 Add";
+    addBtn.appendChild(plus); addBtn.appendChild(lbl);
+    addBtn.addEventListener("click", () => {
+      flashPress(addBtn);
+      const t = prompt("輸入要新增的常用字或短句：");
+      if (t && t.trim()) {
+        customPhrases.push(t.trim());
+        saveCustom();
+        renderPhrases();
+      }
+    });
+    phrasesEl.appendChild(addBtn);
+  }
+
+  renderPhrases();
 
   // Letter rows
   document.querySelectorAll(".key-row").forEach(row => {
