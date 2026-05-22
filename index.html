@@ -228,15 +228,28 @@
 
   /* Tablet portrait / phone */
   @media (max-width: 720px) {
-    .app { padding: 8px; gap: 8px; }
-    .display { padding: 10px 14px; flex-basis: 12%; border-radius: 14px; }
-    .phrases { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .phrase-btn { min-height: 60px; padding: 12px 4px; }
+    .app { padding: 6px; gap: 6px; }
+    .display { padding: 6px 14px; flex-basis: 7.5%; border-radius: 14px; }
+    .display-text { font-size: clamp(1.05rem, 4vw, 1.8rem); }
+    .phrases {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-height: 40vh;
+    }
+    .phrase-btn {
+      min-height: 50px;
+      padding: 10px 4px;
+      font-size: 0.95rem;
+      border-radius: 12px;
+    }
     .phrase-btn.wide { grid-column: span 3; }
-    .keyboard { gap: 6px; }
-    .key-row { gap: 6px; }
-    .key { min-height: 46px; border-radius: 12px; }
-    .key.bilingual { font-size: 0.85rem; }
+    .keyboard { gap: 5px; }
+    .key-row { gap: 5px; }
+    .key { min-height: 40px; border-radius: 10px; }
+    .key.bilingual { font-size: 0.75rem; }
+    .key.bilingual .en { font-size: 0.8em; }
+    .key.back { font-size: 1.3rem; }
+    .key.back .icon { font-size: 1.1em; }
   }
 
   @media (orientation: landscape) and (max-height: 500px) {
