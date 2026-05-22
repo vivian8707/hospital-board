@@ -10,27 +10,35 @@
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
 
   :root {
-    --c-bg:        #f3efe6;
-    --c-display:   #161e2e;
-    --c-text:      #161e2e;
-    --c-text-soft: #6b7591;
-    --c-card:      #ffffff;
-    --c-cream:     #fef3d8;
-    --c-cream-bd:  #f1d99a;
-    --c-mint:      #d4f0d4;
-    --c-mint-bd:   #8fc78f;
-    --c-peach:     #fde2d4;
-    --c-peach-bd:  #f0b894;
-    --c-pink:      #fbd9e0;
-    --c-pink-bd:   #e89cae;
-    --c-border:    #e5e0d3;
+    --bg:           #fbfaf6;
+    --card:         #ffffff;
+    --ink:          #2b3a4a;
+    --ink-soft:     #8a96a8;
+    --line:         #ecebe4;
+
+    --phrase:       #fff6dc;
+    --phrase-bd:    #f3dfa6;
+    --phrase-hot:   #e6f3ff;
+    --phrase-hot-bd:#b9dcf6;
+
+    --space:        #e1f3e4;
+    --space-bd:     #a9d8b1;
+    --speak:        #e8e1f5;
+    --speak-bd:     #b6a7d8;
+    --back:         #fde7d6;
+    --back-bd:      #f3c69e;
+    --clear:        #fbdee2;
+    --clear-bd:     #ecaab4;
+
+    --shadow:       0 1px 2px rgba(60, 50, 80, 0.04), 0 4px 14px rgba(60, 50, 80, 0.05);
+    --shadow-soft:  0 1px 0 rgba(60, 50, 80, 0.06);
   }
 
   html, body {
     height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
-    background: var(--c-bg);
-    color: var(--c-text);
+    background: var(--bg);
+    color: var(--ink);
     overflow: hidden;
     touch-action: manipulation;
   }
@@ -40,30 +48,30 @@
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
-    padding: 10px;
-    gap: 10px;
+    padding: 14px;
+    gap: 12px;
   }
 
   /* ===== Display ===== */
   .display {
     flex: 0 0 22%;
-    background: var(--c-display);
-    color: #fff;
-    border-radius: 12px;
-    padding: 14px 22px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 18px 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow);
   }
 
   .display-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: #8a93a8;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
   }
 
   .display-text {
@@ -74,11 +82,11 @@
     white-space: pre-wrap;
     max-height: 100%;
     overflow-y: auto;
-    color: #fff;
+    color: var(--ink);
   }
 
   .display-text.empty {
-    color: #6b7591;
+    color: #c2cbd6;
     font-style: italic;
     font-weight: 500;
   }
@@ -87,28 +95,37 @@
   .phrases {
     flex: 0 0 auto;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
   }
 
   .phrase-btn {
-    padding: 12px 6px;
-    border: 1.5px solid var(--c-cream-bd);
-    border-radius: 10px;
-    background: var(--c-cream);
-    color: var(--c-text);
-    font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+    padding: 14px 8px;
+    border: 1.5px solid var(--phrase-bd);
+    border-radius: 14px;
+    background: var(--phrase);
+    color: var(--ink);
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
     font-weight: 700;
     cursor: pointer;
     transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
-    min-height: 50px;
+    min-height: 56px;
     line-height: 1.2;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .phrase-btn.wide { grid-column: span 2; }
+
+  .phrase-btn.starter {
+    background: var(--phrase-hot);
+    border-color: var(--phrase-hot-bd);
   }
 
   .phrase-btn:active,
   .phrase-btn.pressed {
     transform: translateY(2px);
-    filter: brightness(0.94);
+    box-shadow: none;
+    filter: brightness(0.96);
   }
 
   /* ===== Keyboard ===== */
@@ -127,19 +144,19 @@
   }
 
   .key {
-    border: 1.5px solid var(--c-border);
-    border-radius: 14px;
-    background: var(--c-card);
-    color: var(--c-text);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    background: var(--card);
+    color: var(--ink);
     font-size: clamp(1.6rem, 4.2vw, 3rem);
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     transition: transform 0.06s, filter 0.1s, box-shadow 0.1s;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-soft);
     min-height: 56px;
     line-height: 1;
   }
@@ -148,61 +165,50 @@
   .key.pressed {
     transform: translateY(2px);
     box-shadow: none;
-    filter: brightness(0.94);
+    filter: brightness(0.96);
   }
 
-  /* Control keys on row 5 */
+  /* Control keys */
   .key.bilingual {
-    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+    font-size: clamp(0.85rem, 1.5vw, 1.05rem);
     font-weight: 700;
     gap: 2px;
   }
-  .key.bilingual .zh {
-    font-size: 1em;
-    font-weight: 800;
-  }
-  .key.bilingual .en {
-    font-size: 0.85em;
-    color: var(--c-text-soft);
-    font-weight: 600;
-  }
+  .key.bilingual .zh { font-size: 1em; font-weight: 800; }
+  .key.bilingual .en { font-size: 0.85em; color: var(--ink-soft); font-weight: 600; }
+  .key.bilingual .icon { font-size: 1.6em; line-height: 1; }
 
-  .key.space    { background: var(--c-mint);  border-color: var(--c-mint-bd); }
-  .key.back     { background: var(--c-peach); border-color: var(--c-peach-bd); font-size: 1.6rem; }
-  .key.back .icon { font-size: 1.3em; }
-  .key.clear-k  { background: var(--c-pink);  border-color: var(--c-pink-bd); }
+  .key.space    { background: var(--space); border-color: var(--space-bd); }
+  .key.speak    { background: var(--speak); border-color: var(--speak-bd); }
+  .key.back     { background: var(--back);  border-color: var(--back-bd);  }
+  .key.clear-k  { background: var(--clear); border-color: var(--clear-bd); }
 
-  .key.speak    {
-    background: var(--c-mint);
-    border-color: var(--c-mint-bd);
-  }
-  .key.speak.playing {
-    animation: pulse 1s infinite;
-  }
+  .key.speak.playing { animation: pulse 1s infinite; }
   @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(143, 199, 143, 0.6); }
-    50%      { box-shadow: 0 0 0 10px rgba(143, 199, 143, 0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(182, 167, 216, 0.6); }
+    50%      { box-shadow: 0 0 0 12px rgba(182, 167, 216, 0); }
   }
 
-  /* Row 5 column layout: Y Z [Space] [Speak] [Back] [Clear] */
+  /* Row 5: Y Z [Space wide] [Speak] [Back] [Clear] */
   .key-row.r5 {
     grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 1fr;
   }
 
   /* Tablet portrait / phone */
   @media (max-width: 720px) {
-    .app { padding: 6px; gap: 6px; }
-    .display { padding: 10px 14px; flex-basis: 18%; }
-    .phrases { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-    .phrase-btn { min-height: 48px; padding: 10px 4px; }
+    .app { padding: 8px; gap: 8px; }
+    .display { padding: 12px 16px; flex-basis: 18%; border-radius: 16px; }
+    .phrases { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .phrase-btn { min-height: 50px; padding: 10px 4px; }
+    .phrase-btn.wide { grid-column: span 3; }
     .keyboard { gap: 6px; }
     .key-row { gap: 6px; }
-    .key { min-height: 46px; border-radius: 10px; }
+    .key { min-height: 46px; border-radius: 12px; }
     .key.bilingual { font-size: 0.85rem; }
   }
 
   @media (orientation: landscape) and (max-height: 500px) {
-    .display { flex-basis: 20%; }
+    .display { flex-basis: 18%; }
     .phrase-btn { min-height: 40px; padding: 6px 4px; }
     .key { min-height: 36px; }
   }
@@ -228,16 +234,17 @@
 
 <script>
   const phrases = [
-    "Never mind…",
-    "but",
-    "because",
-    "it's fine",
-    "teacher",
-    "class",
-    "I want to eat",
-    "I want to speak",
-    "I want to walk",
-    "I miss…"
+    { text: "Never mind…" },
+    { text: "but" },
+    { text: "because" },
+    { text: "it's fine" },
+    { text: "teacher" },
+    { text: "class" },
+    { text: "I want to", wide: true, starter: true },
+    { text: "Speak" },
+    { text: "Eat" },
+    { text: "Walk" },
+    { text: "I miss…", starter: true }
   ];
 
   const display = document.getElementById("display");
@@ -271,15 +278,15 @@
     if (!text.endsWith(" ") && text.length > 0) { text += " "; render(); }
   }
   function backspace() { text = text.slice(0, -1); render(); }
-  function clearAll() { text = ""; render(); }
+  function clearAll()  { text = ""; render(); }
 
   // Phrases
   phrases.forEach(p => {
     const btn = document.createElement("button");
-    btn.className = "phrase-btn";
+    btn.className = "phrase-btn" + (p.wide ? " wide" : "") + (p.starter ? " starter" : "");
     btn.type = "button";
-    btn.textContent = p;
-    btn.addEventListener("click", () => { flashPress(btn); appendPhrase(p); });
+    btn.textContent = p.text;
+    btn.addEventListener("click", () => { flashPress(btn); appendPhrase(p.text); });
     phrasesEl.appendChild(btn);
   });
 
@@ -295,44 +302,27 @@
     });
   });
 
-  // Helper to build bilingual control key
   function makeCtrlKey(extraClass, zh, en, onClick, icon) {
     const btn = document.createElement("button");
     btn.className = "key bilingual " + extraClass;
     btn.type = "button";
-    if (icon) {
-      const i = document.createElement("span");
-      i.className = "icon";
-      i.textContent = icon;
-      btn.appendChild(i);
-    }
-    if (zh) {
-      const z = document.createElement("span");
-      z.className = "zh";
-      z.textContent = zh;
-      btn.appendChild(z);
-    }
-    if (en) {
-      const e = document.createElement("span");
-      e.className = "en";
-      e.textContent = en;
-      btn.appendChild(e);
-    }
+    if (icon) { const i = document.createElement("span"); i.className = "icon"; i.textContent = icon; btn.appendChild(i); }
+    if (zh)   { const z = document.createElement("span"); z.className = "zh";   z.textContent = zh;   btn.appendChild(z); }
+    if (en)   { const e = document.createElement("span"); e.className = "en";   e.textContent = en;   btn.appendChild(e); }
     btn.addEventListener("click", () => { flashPress(btn); onClick(); });
     return btn;
   }
 
   const r5 = document.querySelector(".key-row.r5");
-  const spaceBtn  = makeCtrlKey("space",   "空白",  "Space",  appendSpace);
-  const speakBtn  = makeCtrlKey("speak",   "唸出來", "Speak", speakText);
-  const backBtnEl = makeCtrlKey("back",    "",      "",      backspace, "⌫");
-  const clearBtn  = makeCtrlKey("clear-k", "清除",  "Clear",  clearAll);
+  const spaceBtn = makeCtrlKey("space",   "空白",   "Space", appendSpace);
+  const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak", speakText);
+  const backBtn  = makeCtrlKey("back",    "",       "",      backspace, "⌫");
+  const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear", clearAll);
   r5.appendChild(spaceBtn);
   r5.appendChild(speakBtn);
-  r5.appendChild(backBtnEl);
+  r5.appendChild(backBtn);
   r5.appendChild(clearBtn);
 
-  // Speech
   function speakText() {
     if (!text.trim()) return;
     if (!("speechSynthesis" in window)) { alert("此瀏覽器不支援語音播放"); return; }
@@ -352,9 +342,8 @@
     window.speechSynthesis.getVoices();
   }
 
-  // Physical keyboard fallback (desktop testing)
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace") { e.preventDefault(); backBtnEl.click(); return; }
+    if (e.key === "Backspace") { e.preventDefault(); backBtn.click(); return; }
     if (e.key === "Escape")    { clearBtn.click(); return; }
     if (e.key === " ")         { e.preventDefault(); spaceBtn.click(); return; }
     if (/^[a-zA-Z]$/.test(e.key)) {
