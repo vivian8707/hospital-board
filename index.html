@@ -25,6 +25,8 @@
     --space-bd:     #a9d8b1;
     --speak:        #e8e1f5;
     --speak-bd:     #b6a7d8;
+    --fav:          #fff1c4;
+    --fav-bd:       #ddbc6d;
     --back:         #fde7d6;
     --back-bd:      #f3c69e;
     --clear:        #fbdee2;
@@ -128,28 +130,6 @@
     border-color: var(--space-bd);
   }
 
-  .phrase-btn.add {
-    background: transparent;
-    border: 2px dashed #c8c2b2;
-    color: var(--ink-soft);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    box-shadow: none;
-  }
-  .phrase-btn.add .plus {
-    font-size: 1.8rem;
-    font-weight: 800;
-    line-height: 1;
-    color: var(--ink);
-  }
-  .phrase-btn.add .add-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
   .phrase-del {
     position: absolute;
     top: 4px;
@@ -224,8 +204,16 @@
 
   .key.space    { background: var(--space); border-color: var(--space-bd); }
   .key.speak    { background: var(--speak); border-color: var(--speak-bd); }
+  .key.fav      { background: var(--fav);   border-color: var(--fav-bd);   }
   .key.back     { background: var(--back);  border-color: var(--back-bd);  }
   .key.clear-k  { background: var(--clear); border-color: var(--clear-bd); }
+
+  .key.fav.flash { animation: fav-flash 0.5s ease-out; }
+  @keyframes fav-flash {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.12); background: #ffd95c; }
+    100% { transform: scale(1); }
+  }
 
   .key.speak.playing { animation: pulse 1s infinite; }
   @keyframes pulse {
@@ -233,9 +221,9 @@
     50%      { box-shadow: 0 0 0 12px rgba(182, 167, 216, 0); }
   }
 
-  /* Row 5: Y Z [Space wide] [Speak] [Back] [Clear] */
+  /* Row 5: Y Z [Space] [Speak] [Fav] [Back] [Clear] */
   .key-row.r5 {
-    grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1.3fr 1fr 1fr 1fr 1fr;
   }
 
   /* Tablet portrait / phone */
@@ -367,23 +355,6 @@
     phrasesEl.innerHTML = "";
     DEFAULT_PHRASES.forEach(p => phrasesEl.appendChild(buildPhraseBtn(p, false)));
     customPhrases.forEach((t, idx) => phrasesEl.appendChild(buildPhraseBtn({ text: t }, true, idx)));
-
-    const addBtn = document.createElement("button");
-    addBtn.className = "phrase-btn add";
-    addBtn.type = "button";
-    const plus = document.createElement("span"); plus.className = "plus"; plus.textContent = "+";
-    const lbl  = document.createElement("span"); lbl.className  = "add-label"; lbl.textContent = "新增 Add";
-    addBtn.appendChild(plus); addBtn.appendChild(lbl);
-    addBtn.addEventListener("click", () => {
-      flashPress(addBtn);
-      const t = prompt("輸入要新增的常用字或短句：");
-      if (t && t.trim()) {
-        customPhrases.push(t.trim());
-        saveCustom();
-        renderPhrases();
-      }
-    });
-    phrasesEl.appendChild(addBtn);
   }
 
   renderPhrases();
@@ -412,14 +383,31 @@
   }
 
   const r5 = document.querySelector(".key-row.r5");
-  const spaceBtn = makeCtrlKey("space",   "空白",   "Space", appendSpace);
-  const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak", speakText);
-  const backBtn  = makeCtrlKey("back",    "",       "",      backspace, "⌫");
-  const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear", clearAll);
+  const spaceBtn = makeCtrlKey("space",   "空白",   "Space",        appendSpace);
+  const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak",        speakText);
+  const favBtn   = makeCtrlKey("fav",     "加常用", "Favorite",     addCurrentToFavorites);
+  const backBtn  = makeCtrlKey("back",    "",       "",             backspace, "⌫");
+  const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear",        clearAll);
   r5.appendChild(spaceBtn);
   r5.appendChild(speakBtn);
+  r5.appendChild(favBtn);
   r5.appendChild(backBtn);
   r5.appendChild(clearBtn);
+
+  function addCurrentToFavorites() {
+    const t = text.trim();
+    if (!t) return;
+    if (customPhrases.includes(t)) {
+      favBtn.classList.add("flash");
+      setTimeout(() => favBtn.classList.remove("flash"), 500);
+      return;
+    }
+    customPhrases.push(t);
+    saveCustom();
+    renderPhrases();
+    favBtn.classList.add("flash");
+    setTimeout(() => favBtn.classList.remove("flash"), 500);
+  }
 
   function speakText() {
     if (!text.trim()) return;
