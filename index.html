@@ -199,12 +199,12 @@
 
   /* Control keys */
   .key.bilingual {
-    font-size: clamp(1.05rem, 1.9vw, 1.35rem);
+    font-size: clamp(1.25rem, 2.3vw, 1.7rem);
     font-weight: 700;
     gap: 3px;
   }
   .key.bilingual .zh { font-size: 1em; font-weight: 800; }
-  .key.bilingual .en { font-size: 0.85em; color: var(--ink-soft); font-weight: 600; }
+  .key.bilingual .en { font-size: 0.78em; color: var(--ink-soft); font-weight: 600; }
   .key.bilingual .icon { font-size: 1.6em; line-height: 1; }
 
   .key.speak    { background: var(--speak); border-color: var(--speak-bd); }
@@ -224,9 +224,9 @@
     50%      { box-shadow: 0 0 0 12px rgba(182, 167, 216, 0); }
   }
 
-  /* Row 5: Y Z [Speak] [Fav] [Clear] — letters stay 1fr like other rows */
+  /* Row 5: Y Z [Speak] [Fav] [Clear] — give letters more room, slim controls */
   .key-row.r5 {
-    grid-template-columns: 1fr 1fr 1.33fr 1.33fr 1.33fr;
+    grid-template-columns: 1.35fr 1.35fr 1.1fr 1.1fr 1.1fr;
   }
 
   /* Tablet portrait / phone */
@@ -249,8 +249,8 @@
     .keyboard { gap: 5px; }
     .key-row { gap: 5px; }
     .key { min-height: 42px; border-radius: 10px; }
-    .key.bilingual { font-size: 0.95rem; }
-    .key.bilingual .en { font-size: 0.8em; }
+    .key.bilingual { font-size: 1.15rem; }
+    .key.bilingual .en { font-size: 0.7em; }
   }
 
   @media (orientation: landscape) and (max-height: 500px) {
