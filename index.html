@@ -66,6 +66,10 @@
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
+  }
+  .display.listening {
+    box-shadow: 0 0 0 3px rgba(184, 232, 212, 0.7), var(--shadow);
   }
 
   .display-text {
@@ -304,10 +308,14 @@
   }
 
   const display = document.getElementById("display");
+  const displayCard = document.querySelector(".display");
   const phrasesEl = document.getElementById("phrases");
   const PLACEHOLDER = "Dear Cory, want to say something?";
 
+  const TYPING_PAUSE_MS = 1500;
   let text = "";
+  let typingTimer = null;
+  let lastAutoSpokenIdx = 0;
 
   function render() {
     if (text === "") {
@@ -324,18 +332,53 @@
     setTimeout(() => el.classList.remove("pressed"), 120);
   }
 
+  function cancelAutoSpeak() {
+    if (typingTimer) { clearTimeout(typingTimer); typingTimer = null; }
+    displayCard.classList.remove("listening");
+  }
+
+  function scheduleAutoSpeak() {
+    cancelAutoSpeak();
+    displayCard.classList.add("listening");
+    typingTimer = setTimeout(() => {
+      typingTimer = null;
+      displayCard.classList.remove("listening");
+      const newChunk = text.slice(lastAutoSpokenIdx).trim();
+      if (newChunk) {
+        speakText(newChunk);
+        lastAutoSpokenIdx = text.length;
+      }
+    }, TYPING_PAUSE_MS);
+  }
+
   function appendPhrase(value) {
+    cancelAutoSpeak();
     const needsSpace = text.length > 0 && !text.endsWith(" ") && !/^[.,!?…]/.test(value);
     text += (needsSpace ? " " : "") + value + " ";
     render();
     speakText(value);
+    lastAutoSpokenIdx = text.length;
   }
-  function appendLetter(L) { text += L; render(); }
+  function appendLetter(L) {
+    text += L;
+    render();
+    scheduleAutoSpeak();
+  }
   function appendSpace() {
-    if (!text.endsWith(" ") && text.length > 0) { text += " "; render(); }
+    if (!text.endsWith(" ") && text.length > 0) { text += " "; render(); scheduleAutoSpeak(); }
   }
-  function backspace() { text = text.slice(0, -1); render(); }
-  function clearAll()  { text = ""; render(); }
+  function backspace() {
+    cancelAutoSpeak();
+    text = text.slice(0, -1);
+    if (lastAutoSpokenIdx > text.length) lastAutoSpokenIdx = text.length;
+    render();
+  }
+  function clearAll() {
+    cancelAutoSpeak();
+    text = "";
+    lastAutoSpokenIdx = 0;
+    render();
+  }
 
   function buildPhraseBtn(p, isCustom, idx) {
     const btn = document.createElement("button");
