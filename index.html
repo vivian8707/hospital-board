@@ -448,9 +448,9 @@
     const u = new SpeechSynthesisUtterance(s.toLowerCase());
     const v = pickVoice();
     if (v) u.voice = v;
-    u.rate = 0.88;
-    u.pitch = 1.08;
-    u.volume = 1;
+    u.rate = 0.78;   // slower = calmer, gentler
+    u.pitch = 1.1;   // soft, warm
+    u.volume = 0.9;  // a touch softer
     u.onstart = () => { if (speakBtn) speakBtn.classList.add("playing"); };
     u.onend   = () => { if (speakBtn) speakBtn.classList.remove("playing"); };
     u.onerror = () => { if (speakBtn) speakBtn.classList.remove("playing"); };
