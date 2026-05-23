@@ -312,10 +312,35 @@
   const phrasesEl = document.getElementById("phrases");
   const PLACEHOLDER = "Dear Cory, want to say something?";
 
-  const TYPING_PAUSE_MS = 1500;
+  const TYPING_PAUSE_KNOWN = 1100;   // trailing text is a recognized word
+  const TYPING_PAUSE_UNKNOWN = 2500; // names / unusual spellings — wait longer
   let text = "";
   let typingTimer = null;
-  let lastAutoSpokenIdx = 0;
+  let lastSpokenWord = "";
+
+  // Common English words + a few names for this user, so finished words read promptly.
+  const COMMON_WORDS = new Set((
+    "a i an the be to of and in that have it for not on with he as you do at this " +
+    "but his by from they we say her she or will my one all would there their what " +
+    "so up out if about who get which go me when make can like time no just him know " +
+    "take people into year your good some could them see other than then now look only " +
+    "come over think back after use two how our work first well way even new want any " +
+    "give day most us am are was were hello hi yes okay fine bad more less stop wait " +
+    "yesterday today tomorrow morning afternoon evening night here please thank thanks " +
+    "sorry help water food eat drink sleep tired pain hurt sick hot cold warm bathroom " +
+    "toilet nurse doctor family mom dad mum mother father home love miss happy sad scared " +
+    "walk speak talk listen read write play music light dark open close big small left " +
+    "right down hand head leg arm back foot eye ear mouth nose phone call name teacher " +
+    "class school book pen paper friend please now soon later again maybe really very much " +
+    "little need feel better worse rest medicine pill nausea thirsty hungry blanket pillow " +
+    "window door tv music song family baby son daughter wife husband sister brother grandma " +
+    "grandpa cory"
+  ).split(/\s+/).filter(Boolean));
+
+  function currentWord() {
+    const m = text.match(/[A-Za-z]+$/);
+    return m ? m[0] : "";
+  }
 
   function render() {
     if (text === "") {
@@ -339,16 +364,20 @@
 
   function scheduleAutoSpeak() {
     cancelAutoSpeak();
+    const w = currentWord();
+    if (!w) return;
     displayCard.classList.add("listening");
+    const known = w.length >= 3 && COMMON_WORDS.has(w.toLowerCase());
+    const delay = known ? TYPING_PAUSE_KNOWN : TYPING_PAUSE_UNKNOWN;
     typingTimer = setTimeout(() => {
       typingTimer = null;
       displayCard.classList.remove("listening");
-      const newChunk = text.slice(lastAutoSpokenIdx).trim();
-      if (newChunk) {
-        speakText(newChunk);
-        lastAutoSpokenIdx = text.length;
+      const word = currentWord();
+      if (word && word !== lastSpokenWord) {
+        speakText(word);
+        lastSpokenWord = word;
       }
-    }, TYPING_PAUSE_MS);
+    }, delay);
   }
 
   function appendPhrase(value) {
@@ -357,7 +386,7 @@
     text += (needsSpace ? " " : "") + value + " ";
     render();
     speakText(value);
-    lastAutoSpokenIdx = text.length;
+    lastSpokenWord = "";
   }
   function appendLetter(L) {
     text += L;
@@ -365,18 +394,23 @@
     scheduleAutoSpeak();
   }
   function appendSpace() {
-    if (!text.endsWith(" ") && text.length > 0) { text += " "; render(); scheduleAutoSpeak(); }
+    if (!text.endsWith(" ") && text.length > 0) {
+      cancelAutoSpeak();
+      text += " ";
+      lastSpokenWord = "";
+      render();
+    }
   }
   function backspace() {
     cancelAutoSpeak();
     text = text.slice(0, -1);
-    if (lastAutoSpokenIdx > text.length) lastAutoSpokenIdx = text.length;
+    lastSpokenWord = "";
     render();
   }
   function clearAll() {
     cancelAutoSpeak();
     text = "";
-    lastAutoSpokenIdx = 0;
+    lastSpokenWord = "";
     render();
   }
 
@@ -503,7 +537,8 @@
     if (!t) return;
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(t);
+    // Lowercase so single letters / all-caps words aren't read as "capital A"
+    const u = new SpeechSynthesisUtterance(t.toLowerCase());
     const v = pickVoice();
     if (v) u.voice = v;
     u.rate = 0.88;     // a touch slower for warmth
