@@ -161,14 +161,14 @@
   .keyboard {
     flex: 1 1 auto;
     display: grid;
-    grid-template-rows: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     gap: 10px;
     min-height: 0;
   }
 
   .key-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 10px;
   }
 
@@ -224,9 +224,9 @@
     50%      { box-shadow: 0 0 0 12px rgba(182, 167, 216, 0); }
   }
 
-  /* Row 6: Z [Speak] [Fav] [Clear] — Z keeps letter width, controls take rest */
-  .key-row.r6 {
-    grid-template-columns: 1fr 1.33fr 1.33fr 1.33fr;
+  /* Row 5: Y Z [Speak] [Fav] [Clear] */
+  .key-row.r5 {
+    grid-template-columns: 1fr 1fr 1.33fr 1.33fr 1.33fr;
   }
 
   /* Tablet portrait / phone */
@@ -269,12 +269,11 @@
   <div class="phrases" id="phrases"></div>
 
   <div class="keyboard" id="keyboard">
-    <div class="key-row" data-letters="ABCDE"></div>
-    <div class="key-row" data-letters="FGHIJ"></div>
-    <div class="key-row" data-letters="KLMNO"></div>
-    <div class="key-row" data-letters="PQRST"></div>
-    <div class="key-row" data-letters="UVWXY"></div>
-    <div class="key-row r6" data-letters="Z"></div>
+    <div class="key-row" data-letters="ABCDEF"></div>
+    <div class="key-row" data-letters="GHIJKL"></div>
+    <div class="key-row" data-letters="MNOPQR"></div>
+    <div class="key-row" data-letters="STUVWX"></div>
+    <div class="key-row r5" data-letters="YZ"></div>
   </div>
 </div>
 
@@ -407,13 +406,13 @@
     return btn;
   }
 
-  const r6 = document.querySelector(".key-row.r6");
+  const r5 = document.querySelector(".key-row.r5");
   const speakBtn = makeCtrlKey("speak",   "唸出來", "Speak",    () => speakText(text));
   const favBtn   = makeCtrlKey("fav",     "加常用", "Favorite", addCurrentToFavorites);
   const clearBtn = makeCtrlKey("clear-k", "清除",   "Clear",    clearAll);
-  r6.appendChild(speakBtn);
-  r6.appendChild(favBtn);
-  r6.appendChild(clearBtn);
+  r5.appendChild(speakBtn);
+  r5.appendChild(favBtn);
+  r5.appendChild(clearBtn);
 
   function addCurrentToFavorites() {
     const t = text.trim();
