@@ -29,6 +29,8 @@
     --speak-bd:  #b6a7d8;
     --clear:     #fbdee2;
     --clear-bd:  #ecaab4;
+    --space:     #eef1f4;
+    --space-bd:  #cdd5de;
 
     --app-bg:    #fbfaf6;
 
@@ -207,9 +209,9 @@
     gap: var(--gap);
     min-height: 0;
   }
-  /* Last row: Y Z ♥ Clear Speak */
+  /* Last row: Y Z ♥ Space Clear Speak */
   .key-row.r-last {
-    grid-template-columns: repeat(2, 1fr) 1fr 1.6fr 1.6fr;
+    grid-template-columns: repeat(2, 1fr) 1fr 1.6fr 1.6fr 1.6fr;
   }
 
   .key {
@@ -268,6 +270,7 @@
   .key.ctrl .ctrl-icon { font-size: clamp(1.6rem, 2.6vw, 2.2rem); line-height: 1; }
   .key.ctrl .ctrl-label { font-size: .85em; font-weight: 700; }
 
+  .key.ctrl.space { background: var(--space); border-color: var(--space-bd); }
   .key.ctrl.clear { background: var(--clear); border-color: var(--clear-bd); }
   .key.ctrl.speak { background: var(--speak); border-color: var(--speak-bd); }
 
@@ -598,6 +601,13 @@
   favBtn.innerHTML = '<span class="fav-heart">♥</span>';
   favBtn.addEventListener("click", () => { flashPress(favBtn); addToFavorites(); });
 
+  const spaceBtn = document.createElement("button");
+  spaceBtn.type = "button";
+  spaceBtn.className = "key ctrl space";
+  spaceBtn.title = "空白 / Space";
+  spaceBtn.innerHTML = '<span class="ctrl-icon">␣</span><span class="ctrl-label">Space</span>';
+  spaceBtn.addEventListener("click", () => { flashPress(spaceBtn); appendSpace(); });
+
   const clearBtn = document.createElement("button");
   clearBtn.type = "button";
   clearBtn.className = "key ctrl clear";
@@ -611,6 +621,7 @@
   speakBtn.addEventListener("click", () => { flashPress(speakBtn); speakText(text); });
 
   lastRow.appendChild(favBtn);
+  lastRow.appendChild(spaceBtn);
   lastRow.appendChild(clearBtn);
   lastRow.appendChild(speakBtn);
 
