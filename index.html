@@ -56,10 +56,10 @@
 
   /* ===== Display ===== */
   .display {
-    flex: 0 0 9%;
+    flex: 0 0 6%;
     background: var(--card);
-    border-radius: 16px;
-    padding: 8px 18px;
+    border-radius: 14px;
+    padding: 6px 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -69,7 +69,7 @@
   }
 
   .display-text {
-    font-size: clamp(1.3rem, 3.2vw, 2.4rem);
+    font-size: clamp(1.1rem, 2.6vw, 2rem);
     font-weight: 700;
     line-height: 1.15;
     word-break: break-word;
@@ -232,8 +232,8 @@
   /* Tablet portrait / phone */
   @media (max-width: 720px) {
     .app { padding: 6px; gap: 6px; }
-    .display { padding: 6px 14px; flex-basis: 7.5%; border-radius: 14px; }
-    .display-text { font-size: clamp(1.05rem, 4vw, 1.8rem); }
+    .display { padding: 4px 12px; flex-basis: 5%; border-radius: 12px; }
+    .display-text { font-size: clamp(0.95rem, 3.5vw, 1.5rem); }
     .phrases {
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
