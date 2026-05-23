@@ -362,12 +362,17 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
   }
 
-  // ── Voice selection (warm female English voices) ──
+  // ── Voice selection (warm, gentle female voices; iOS-enhanced first) ──
   const PREFERRED_VOICES = [
-    "Samantha",
+    // iOS premium / enhanced female voices — gentlest, download in Settings
     "Ava (Premium)", "Ava (Enhanced)", "Ava",
-    "Allison (Premium)", "Allison",
-    "Karen", "Moira", "Tessa",
+    "Nicky (Enhanced)", "Nicky",
+    "Allison (Enhanced)", "Allison",
+    "Susan (Enhanced)", "Susan",
+    "Zoe (Enhanced)", "Zoe",
+    "Samantha (Enhanced)", "Samantha",   // reliable iOS default
+    "Karen", "Moira", "Tessa", "Catherine", "Martha",
+    // other platforms (desktop testing)
     "Microsoft Aria Online (Natural)",
     "Microsoft Jenny Online (Natural)",
     "Google UK English Female",
