@@ -725,10 +725,13 @@
   });
 
   // ── Voice picker ──
-  const NICE_VOICES = ["Samantha", "Karen", "Moira", "Tessa", "Kathy", "Shelley",
-    "Flo", "Sandy", "Grandma", "Nicky", "Ava", "Allison", "Susan", "Zoe",
-    "Joelle", "Serena", "Catherine", "Martha", "Fiona"];
-  const VOICE_ORDER = ["Samantha", "Karen", "Moira", "Tessa", "Shelley", "Flo", "Sandy", "Kathy", "Grandma"];
+  // Natural-sounding female voices only — the iOS "character" voices
+  // (Flo, Shelley, Sandy, Grandma, etc.) are intentionally excluded.
+  const NICE_VOICES = ["Karen", "Samantha", "Moira", "Tessa",
+    "Ava", "Allison", "Susan", "Nicky", "Zoe", "Joelle", "Serena",
+    "Catherine", "Martha", "Fiona",
+    "Google UK English Female", "Google US English"];
+  const VOICE_ORDER = ["Karen", "Samantha", "Moira", "Tessa", "Ava", "Allison", "Nicky", "Joelle"];
   const REGION = { "en-US": "US", "en-GB": "UK", "en-AU": "AU", "en-IE": "IE", "en-ZA": "ZA", "en-IN": "IN", "en-CA": "CA" };
 
   const voiceBtn = document.getElementById("voice-btn");
