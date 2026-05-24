@@ -71,7 +71,7 @@
   }
 
   .display {
-    flex: 0 1 33%;
+    flex: 0 1 50%;
     background: var(--card);
     border: 1.5px solid var(--line);
     border-radius: var(--radius);
@@ -109,7 +109,7 @@
   .top-phrases {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--gap);
     min-width: 0;
   }
@@ -296,6 +296,68 @@
     .phrases { max-height: 30vh; }
     .key { min-height: 40px; }
   }
+
+  /* ───── Voice picker ───── */
+  #voice-btn {
+    position: absolute;
+    top: 6px; right: 8px;
+    width: 32px; height: 32px;
+    border: none; border-radius: 50%;
+    background: rgba(43, 58, 74, .07);
+    color: var(--ink);
+    font-size: 16px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 2;
+  }
+  #voice-btn:active { background: rgba(43, 58, 74, .18); }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(20, 24, 32, .45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 50; padding: 20px;
+  }
+  .modal-overlay[hidden] { display: none; }
+  .modal-card {
+    background: #fff; border-radius: 22px;
+    width: min(460px, 92vw); max-height: 82vh;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .modal-title {
+    font-size: 1.3rem; font-weight: 800;
+    padding: 20px 22px 4px; color: var(--ink);
+  }
+  .modal-sub {
+    font-size: .95rem; color: var(--ink-soft);
+    padding: 0 22px 10px;
+  }
+  .voice-list { overflow-y: auto; padding: 4px 14px; flex: 1; }
+  .voice-empty { padding: 24px; text-align: center; color: var(--ink-soft); }
+  .voice-item {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; gap: 10px;
+    padding: 15px 16px; margin: 8px 0;
+    border: 1.5px solid var(--line); border-radius: 16px;
+    background: #fafaf7; font-family: inherit;
+    font-size: 1.2rem; font-weight: 700; color: var(--ink);
+    cursor: pointer; text-align: left;
+  }
+  .voice-item:active { filter: brightness(.97); }
+  .voice-item.selected { background: var(--fav); border-color: var(--fav-bd); }
+  .vi-left { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  .vi-region {
+    font-size: .8rem; font-weight: 700; color: var(--ink-soft);
+    background: rgba(43, 58, 74, .06); border-radius: 8px; padding: 2px 7px;
+  }
+  .vi-check { color: var(--fav-icon); font-size: 1.3rem; min-width: 18px; text-align: right; }
+  .modal-close {
+    margin: 12px 22px 20px; padding: 15px;
+    border: 1.5px solid var(--speak-bd); border-radius: 16px;
+    background: var(--speak); font-family: inherit;
+    font-size: 1.2rem; font-weight: 800; color: var(--ink);
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -303,6 +365,7 @@
   <div class="top-strip">
     <div class="display empty" id="display">
       <div class="display-text" id="display-text">Dear Cory, want to say something?</div>
+      <button id="voice-btn" type="button" title="選擇聲音 / Choose voice" aria-label="選擇聲音">🗣</button>
     </div>
     <div class="top-phrases" id="top-phrases"></div>
   </div>
@@ -318,14 +381,22 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="voice-modal" hidden>
+  <div class="modal-card">
+    <div class="modal-title">選擇聲音 · Voice</div>
+    <div class="modal-sub">點一下試聽，選你最喜歡的（會自動記住）</div>
+    <div class="voice-list" id="voice-list"></div>
+    <button class="modal-close" id="voice-close" type="button">完成 Done</button>
+  </div>
+</div>
+
 <script>
   "use strict";
 
   const TOP_PHRASES = [
     { text: "I want to", starter: true },
     { text: "I miss…",   starter: true },
-    { text: "I feel…",   starter: true },
-    { text: "I need…",   starter: true }
+    { text: "I feel…",   starter: true }
   ];
 
   const DEFAULT_PHRASES = [
@@ -362,6 +433,11 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
   }
 
+  // ── Chosen voice (set via the voice picker, remembered across visits) ──
+  const VOICE_PREF_KEY = "hospitalBoard.voiceName.v1";
+  let chosenVoiceName = "";
+  try { chosenVoiceName = localStorage.getItem(VOICE_PREF_KEY) || ""; } catch (e) {}
+
   // ── Voice selection (warm, gentle female voices; iOS-enhanced first) ──
   const PREFERRED_VOICES = [
     "Joelle (Enhanced)", "Joelle",       // user's chosen voice
@@ -383,6 +459,10 @@
     if (!("speechSynthesis" in window)) return null;
     const voices = window.speechSynthesis.getVoices();
     if (!voices.length) return null;
+    if (chosenVoiceName) {
+      const chosen = voices.find(v => v.name === chosenVoiceName);
+      if (chosen) return chosen;
+    }
     for (const name of PREFERRED_VOICES) {
       const v = voices.find(v => v.name === name || v.name.includes(name));
       if (v) return v;
@@ -643,6 +723,103 @@
       if (btn) btn.click();
     }
   });
+
+  // ── Voice picker ──
+  const NICE_VOICES = ["Samantha", "Karen", "Moira", "Tessa", "Kathy", "Shelley",
+    "Flo", "Sandy", "Grandma", "Nicky", "Ava", "Allison", "Susan", "Zoe",
+    "Joelle", "Serena", "Catherine", "Martha", "Fiona"];
+  const VOICE_ORDER = ["Samantha", "Karen", "Moira", "Tessa", "Shelley", "Flo", "Sandy", "Kathy", "Grandma"];
+  const REGION = { "en-US": "US", "en-GB": "UK", "en-AU": "AU", "en-IE": "IE", "en-ZA": "ZA", "en-IN": "IN", "en-CA": "CA" };
+
+  const voiceBtn = document.getElementById("voice-btn");
+  const voiceModal = document.getElementById("voice-modal");
+  const voiceListEl = document.getElementById("voice-list");
+  const voiceCloseBtn = document.getElementById("voice-close");
+
+  function baseName(n) { return n.replace(/\s*\(.*\)\s*$/, "").trim(); }
+
+  function listableVoices() {
+    const voices = ("speechSynthesis" in window) ? window.speechSynthesis.getVoices() : [];
+    const en = voices.filter(v => /^en/i.test(v.lang));
+    const seen = new Set();
+    let nice = [];
+    for (const v of en) {
+      if (seen.has(v.name)) continue;
+      const b = baseName(v.name).toLowerCase();
+      if (NICE_VOICES.some(n => n.toLowerCase() === b)) { nice.push(v); seen.add(v.name); }
+    }
+    if (chosenVoiceName && !seen.has(chosenVoiceName)) {
+      const c = voices.find(v => v.name === chosenVoiceName);
+      if (c) nice.push(c);
+    }
+    if (!nice.length) {
+      const s = new Set();
+      nice = en.filter(v => (s.has(v.name) ? false : (s.add(v.name), true)));
+    }
+    nice.sort((a, b) => {
+      const ia = VOICE_ORDER.indexOf(baseName(a.name));
+      const ib = VOICE_ORDER.indexOf(baseName(b.name));
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.name.localeCompare(b.name);
+    });
+    return nice;
+  }
+
+  function renderVoiceList() {
+    const voices = listableVoices();
+    voiceListEl.innerHTML = "";
+    if (!voices.length) {
+      const p = document.createElement("div");
+      p.className = "voice-empty";
+      p.textContent = "載入語音中…請重開一次再試";
+      voiceListEl.appendChild(p);
+      return;
+    }
+    const picked = pickVoice();
+    const current = picked ? picked.name : "";
+    voices.forEach(v => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "voice-item" + (v.name === current ? " selected" : "");
+      const leftWrap = document.createElement("span");
+      leftWrap.className = "vi-left";
+      const name = document.createElement("span");
+      name.className = "vi-name";
+      name.textContent = baseName(v.name);
+      const region = document.createElement("span");
+      region.className = "vi-region";
+      region.textContent = REGION[v.lang] || v.lang;
+      leftWrap.appendChild(name);
+      leftWrap.appendChild(region);
+      const check = document.createElement("span");
+      check.className = "vi-check";
+      check.textContent = v.name === current ? "♥" : "";
+      item.appendChild(leftWrap);
+      item.appendChild(check);
+      item.addEventListener("click", () => {
+        chosenVoiceName = v.name;
+        try { localStorage.setItem(VOICE_PREF_KEY, v.name); } catch (e) {}
+        renderVoiceList();
+        speakText("Hi Cory, I'm right here with you.");
+      });
+      voiceListEl.appendChild(item);
+    });
+  }
+
+  function openVoiceModal() {
+    renderVoiceList();
+    voiceModal.hidden = false;
+    if ("speechSynthesis" in window && !window.speechSynthesis.getVoices().length) {
+      window.speechSynthesis.addEventListener("voiceschanged", renderVoiceList, { once: true });
+    }
+  }
+  function closeVoiceModal() {
+    voiceModal.hidden = true;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  }
+
+  voiceBtn.addEventListener("click", openVoiceModal);
+  voiceCloseBtn.addEventListener("click", closeVoiceModal);
+  voiceModal.addEventListener("click", (e) => { if (e.target === voiceModal) closeVoiceModal(); });
 
   // Voice diagnostic: open the page with ?debug to see what voices this
   // browser actually exposes and which one is chosen.
