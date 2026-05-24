@@ -644,6 +644,27 @@
     }
   });
 
+  // Voice diagnostic: open the page with ?debug to see what voices this
+  // browser actually exposes and which one is chosen.
+  function voiceDebug() {
+    if (!/[?&]debug/i.test(location.search)) return;
+    const show = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const en = voices.filter(v => /^en/i.test(v.lang)).map(v => v.name);
+      const joelle = voices.filter(v => /joelle/i.test(v.name)).map(v => v.name + " [" + v.lang + "]");
+      const picked = pickVoice();
+      alert(
+        "Chosen voice: " + (picked ? picked.name + " [" + picked.lang + "]" : "(none)") +
+        "\n\nJoelle found: " + (joelle.length ? joelle.join(", ") : "NO") +
+        "\n\nEnglish voices (" + en.length + "):\n" + en.join(", ") +
+        "\n\nTotal voices: " + voices.length
+      );
+    };
+    if (window.speechSynthesis.getVoices().length) show();
+    else window.speechSynthesis.addEventListener("voiceschanged", show, { once: true });
+  }
+  voiceDebug();
+
   renderPhrases();
   render();
 </script>
